@@ -46,7 +46,7 @@ pipeline {
             steps {
                 echo "Running SonarQube Analysis..."
                 withSonarQubeEnv('Sonar') {
-                    sh 'mvn sonar:sonar -Dsonar.projectKey=SonarQube -Dsonar.sources=src/main/java -Dsonar.java.binaries=target/classes'
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=SonarQube -Dsonar.sources=src/main/java/com/boxfuse/samples/javawarhello/ -Dsonar.java.binaries=target/classes'
                 }
             }
         }
