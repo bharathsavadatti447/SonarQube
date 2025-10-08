@@ -38,11 +38,10 @@ pipeline {
             steps {
                 echo "Deploying the Artifact..."
                 sh 'scp /home/ubuntu/workspace/Project_9/target/hello-1.0.war ubuntu@54.87.19.68:/home/ubuntu/apache-tomcat-9.0.109/webapps'
-
             }
         }
-    } 
-    stage('SonarQube Analysis') {
+
+        stage('SonarQube Analysis') {
             steps {
                 echo "Running SonarQube Analysis..."
                 withSonarQubeEnv('Sonar') {
@@ -50,31 +49,33 @@ pipeline {
                 }
             }
         }
+
         stage('Quality Gate') {
             steps {
                 timeout(time: 1, unit: 'HOURS') {
                     waitForQualityGate abortPipeline: true
                 }
             }
-        }// End of stages
+        }
+
+    } // End of stages
 
     post {
         success {
-            echo "✔️BUILD AND TEST STAGE SUCCESSFUL...!!!"
-            // Updated: allow empty results to prevent failure if no tests
+            echo "✔️ BUILD AND TEST STAGE SUCCESSFUL...!!!"
             junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
             archiveArtifacts artifacts: 'target/*.war', onlyIfSuccessful: true
         }
 
         failure {
-            echo "❌Failure..!!!"
+            echo "❌ Failure..!!!"
             mail to: 'bharath.savadatti447@gmail.com',
                  subject: "Failed: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
                  body: "Job '${env.JOB_NAME}' (${env.BUILD_URL}) failed"
         }
 
         always {
-            echo "🔸🔸🔸You are executed the build🔸🔸🔸!!!"
+            echo "🔸🔸🔸You executed the build🔸🔸🔸!!!"
         }
     }
 }
