@@ -37,8 +37,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo "Deploying the Artifact..."
-                sh 'scp /home/ubuntu/workspace/SonarQube_1/target/hello-1.0.war ubuntu@54.87.19.68:/home/ubuntu/apache-tomcat-9.0.109/webapps'
-            }
+                }
         }
 
         stage('SonarQube Analysis') {
