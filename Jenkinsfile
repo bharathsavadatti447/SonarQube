@@ -23,7 +23,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Compiling Maven project..."
-                sh 'mvn clean package'
+                sh 'mvn clean package -DskipTests'
             }
         }
 
@@ -32,13 +32,13 @@ pipeline {
                 echo "Running Maven tests..."
                 sh 'mvn test'
             }
-        }    
+        }
 
-        stage('Deploy') {
+        stage('Deploy to Tomcat') {
             steps {
-                echo "Deploying the Artifact..."
-                sh 'scp /home/ubuntu/workspace/SonarQube_1/target/hello-1.0.war ubuntu@54.87.19.68:/home/ubuntu/apache-tomcat-9.0.109/webapps'
-                }
+                echo "Deploying the WAR to Tomcat server..."
+                sh 'scp target/*.war ubuntu@54.87.19.68:/home/ubuntu/apache-tomcat-9.0.109/webapps/'
+            }
         }
 
         stage('SonarQube Analysis') {
@@ -58,11 +58,36 @@ pipeline {
             }
         }
 
-    } // End of stages
+        // 🔹 New Stages for Artifactory Integration
+        stage('Prepare Artifact for Artifactory') {
+            steps {
+                echo "Preparing artifact for upload..."
+                sh 'mkdir -p build/output && cp target/*.war build/output/'
+            }
+        }
+
+        stage('Push WAR to Artifactory') {
+            steps {
+                script {
+                    echo "Uploading WAR file to Artifactory..."
+                    def server = Artifactory.server('trial-artifactory')
+                    def uploadSpec = """{
+                        "files": [
+                            {
+                                "pattern": "build/output/*.war",
+                                "target": "generic-local/java-builds/${env.JOB_NAME}/${env.BUILD_NUMBER}/"
+                            }
+                        ]
+                    }"""
+                    server.upload(uploadSpec)
+                }
+            }
+        }
+    }
 
     post {
         success {
-            echo "✔️ BUILD AND TEST STAGE SUCCESSFUL...!!!"
+            echo "✔️ BUILD, TEST & UPLOAD SUCCESSFUL...!!!"
             junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
             archiveArtifacts artifacts: 'target/*.war', onlyIfSuccessful: true
         }
