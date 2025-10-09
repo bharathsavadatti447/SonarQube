@@ -70,7 +70,7 @@ pipeline {
             steps {
                 script {
                     echo "Uploading WAR file to Artifactory..."
-                    def server = Artifactory.server('trial-artifactory')
+                    def server = Artifactory.server('JFrog')
                     def uploadSpec = """{
                         "files": [
                             {
