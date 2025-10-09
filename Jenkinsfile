@@ -68,21 +68,27 @@ pipeline {
         stage('Push WAR to Artifactory') {
             steps {
                 script {
-                    echo "Uploading WAR file to Artifactory..."
-                    def server = Artifactory.server('JFrog')
-                    def uploadSpec = """{
-                        "files": [
-                            {
-                                "pattern": "build/output/*.war",
-                                "target": "generic-local/java-builds/${env.JOB_NAME}/${env.BUILD_NUMBER}/"
-                            }
-                        ]
-                    }"""
+                echo "Uploading WAR file to Artifactory..."
+                
+                // Connect to Artifactory server configured in Jenkins (name: 'JFrog')
+                def server = Artifactory.server('JFrog')
+            
+                // Upload specification
+                def uploadSpec = """{
+                "files": [
+                    {
+                        "pattern": "build/output/*.war",
+                        "target": "maven-snapshots/com/yourcompany/hello/1.0-SNAPSHOT/"
+                        }
+                    ]
+                }"""
+            
+                    // Execute upload
                     server.upload(uploadSpec)
-                }
+                    }
+                }  
             }
-        }
-    }
+
 
     post {
         success {
