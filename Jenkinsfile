@@ -37,8 +37,7 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 echo "Deploying the WAR to Tomcat server..."
-                sh 'scp target/*.war ubuntu@54.87.19.68:/home/ubuntu/apache-tomcat-9.0.109/webapps/'
-            }
+                }
         }
 
         stage('SonarQube Analysis') {
