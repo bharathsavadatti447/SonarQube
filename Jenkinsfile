@@ -37,7 +37,8 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 echo "Deploying the WAR to Tomcat server..."
-                }
+                // Add your Tomcat deployment commands here if needed
+            }
         }
 
         stage('SonarQube Analysis') {
@@ -68,27 +69,27 @@ pipeline {
         stage('Push WAR to Artifactory') {
             steps {
                 script {
-                echo "Uploading WAR file to Artifactory..."
-                
-                // Connect to Artifactory server configured in Jenkins (name: 'JFrog')
-                def server = Artifactory.server('JFrog')
-            
-                // Upload specification
-                def uploadSpec = """{
-                "files": [
-                    {
-                        "pattern": "build/output/*.war",
-                        "target": "maven-snapshots/com/yourcompany/hello/1.0-SNAPSHOT/"
-                        }
-                    ]
-                }"""
-            
+                    echo "Uploading WAR file to Artifactory..."
+
+                    // Connect to Artifactory server configured in Jenkins (name: 'JFrog')
+                    def server = Artifactory.server('JFrog')
+
+                    // Upload specification
+                    def uploadSpec = """{
+                        "files": [
+                            {
+                                "pattern": "build/output/*.war",
+                                "target": "maven-snapshots/com/yourcompany/hello/1.0-SNAPSHOT/"
+                            }
+                        ]
+                    }"""
+
                     // Execute upload
                     server.upload(uploadSpec)
-                    }
-                }  
+                }
             }
-
+        }
+    }
 
     post {
         success {
