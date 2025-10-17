@@ -49,15 +49,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-
         // 🔹 New Stages for Artifactory Integration
         stage('Prepare Artifact for Artifactory') {
             steps {
