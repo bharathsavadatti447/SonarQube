@@ -45,7 +45,7 @@ pipeline {
             steps {
                 echo "Running SonarQube Analysis..."
                 withSonarQubeEnv('Sonar') {
-                    sh 'mvn sonar:sonar'
+                    sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar'
                 }
             }
         }
